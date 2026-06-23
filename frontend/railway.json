@@ -3,7 +3,12 @@
   "build": {
     "builder": "DOCKERFILE",
     "dockerfilePath": "Dockerfile.railway",
-    "buildTarget": "prod"
+    "buildTarget": "prod",
+    "buildArgs": {
+      "NEXT_PUBLIC_BACKEND_BASE_URL": "${NEXT_PUBLIC_BACKEND_BASE_URL}",
+      "NEXT_PUBLIC_LANGGRAPH_BASE_URL": "${NEXT_PUBLIC_LANGGRAPH_BASE_URL}",
+      "DEER_FLOW_INTERNAL_GATEWAY_BASE_URL": "${DEER_FLOW_INTERNAL_GATEWAY_BASE_URL}"
+    }
   },
   "deploy": {
     "startCommand": "cd /app/frontend && PORT=$PORT pnpm start",

@@ -40,6 +40,21 @@ export function getMessageGroups(messages: Message[]): MessageGroup[] {
 
   const groups: MessageGroup[] = [];
 
+  // Pre-scan: collect tool_call_ids from hidden AI messages so their
+  // orphaned tool results can be silently skipped instead of logging errors.
+  const hiddenToolCallIds = new Set<string>();
+  for (const message of messages) {
+    if (
+      message.type === "ai" &&
+      isHiddenFromUIMessage(message) &&
+      message.tool_calls
+    ) {
+      for (const tc of message.tool_calls) {
+        hiddenToolCallIds.add(tc.id ?? "");
+      }
+    }
+  }
+
   // Returns the last group if it can still accept tool messages
   // (i.e. it's an in-flight processing group, not a terminal human/assistant group).
   function lastOpenGroup() {
@@ -57,6 +72,15 @@ export function getMessageGroups(messages: Message[]): MessageGroup[] {
 
   for (const message of messages) {
     if (isHiddenFromUIMessage(message)) {
+      continue;
+    }
+
+    // Skip tool results whose parent AI message was hidden.
+    if (
+      message.type === "tool" &&
+      message.tool_call_id &&
+      hiddenToolCallIds.has(message.tool_call_id)
+    ) {
       continue;
     }
 
