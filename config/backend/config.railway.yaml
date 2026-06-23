@@ -1,0 +1,58 @@
+# DeerFlow config.yaml — Railway deployment
+# Pre-configured with Xiaomi MiMo model
+# Full reference: https://github.com/bytedance/deer-flow/blob/main/config.example.yaml
+
+# ── Models ────────────────────────────────────────────────────────────────────
+models:
+  # Xiaomi MiMo V2.5 Pro (via PatchedChatMiMo)
+  # Token Plan keys (tp-...) use regional URLs:
+  #   https://token-plan-sgp.xiaomimimo.com/v1
+  #   https://token-plan-cn.xiaomimimo.com/v1
+  # Pay-as-you-go keys (sk-...) use:
+  #   https://api.xiaomimimo.com/v1
+  - name: mimo-v2.5-pro
+    display_name: MiMo V2.5 Pro
+    use: deerflow.models.patched_mimo:PatchedChatMiMo
+    model: mimo-v2.5-pro
+    api_key: $MIMO_API_KEY
+    base_url: https://token-plan-sgp.xiaomimimo.com/v1
+    request_timeout: 600.0
+    max_retries: 2
+    max_tokens: 8192
+    supports_thinking: true
+    supports_vision: false
+    when_thinking_enabled:
+      extra_body:
+        thinking:
+          type: enabled
+    when_thinking_disabled:
+      extra_body:
+        thinking:
+          type: disabled
+
+  # Uncomment to add GLM 5.2 via ZenMux (OpenAI-compatible)
+  # - name: glm-5.2
+  #   display_name: GLM 5.2 (ZenMux)
+  #   use: langchain_openai:ChatOpenAI
+  #   model: glm-5.2
+  #   api_key: $ZENMUX_API_KEY
+  #   base_url: https://<zenmux-endpoint>/v1
+  #   request_timeout: 600.0
+  #   max_retries: 2
+  #   max_tokens: 8192
+  #   temperature: 0.7
+
+# ── Search Provider ───────────────────────────────────────────────────────────
+search:
+  - name: web_search
+    group: web
+    use: deerflow.community.duckduckgo.tools:web_search_tool
+    max_results: 5
+
+# ── Web Fetch Provider ────────────────────────────────────────────────────────
+web_fetch:
+  - name: web_fetch
+    group: web
+    use: deerflow.community.jina.tools:web_fetch_tool
+    api_key: $JINA_API_KEY
+    max_tokens: 10000
