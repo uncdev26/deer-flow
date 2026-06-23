@@ -1,0 +1,11 @@
+node_modules/
+.next/
+.git
+.gitignore
+.DS_Store
+Thumbs.db
+*.md
+!README.md
+tests/
+playwright.config.ts
+playwright.*.config.ts
